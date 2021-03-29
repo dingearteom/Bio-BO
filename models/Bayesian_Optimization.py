@@ -2,17 +2,22 @@ from models.model_interface import ModelInterface
 import GPyOpt
 from typing import Tuple
 import deminf_data
-from tqdm.notebook import tqdm
-from models.error import StopModel
+import tqdm
+import os
 
 
 class BayesianOptimization(ModelInterface):
 
-    def __init__(self, total, progress_bar=None, verbose=True):
+    def __init__(self, total, objective_name, progress_bar=None, verbose=True, notebook=True, log=False, log_file_name=None):
         self.num_iter = total
-        objective1 = deminf_data.Objective.from_name('1_Bot_4_Sim', negate=True, type_of_transform='logarithm')
+        self.log_file_name = log_file_name
+        if log_file_name is None:
+            self.log = log
+        else:
+            self.log = True
+        objective = deminf_data.Objective.from_name(objective_name, negate=True, type_of_transform='logarithm')
         bounds = []
-        for i, (l, r) in enumerate(zip(objective1.lower_bound, objective1.upper_bound), start=1):
+        for i, (l, r) in enumerate(zip(objective.lower_bound, objective.upper_bound), start=1):
             bounds.append({'name': f'var_{i}', 'type': 'continuous', 'domain': (l, r)})
 
         def f(x):
@@ -21,7 +26,8 @@ class BayesianOptimization(ModelInterface):
             for point in x:
                 f.count += 1
                 f.X.append(point)
-                y = objective1(point)
+                y = objective(point)
+                f.Y.append(y)
                 if len(f.Y_best) == 0:
                     f.Y_best.append(y)
                 else:
@@ -34,13 +40,19 @@ class BayesianOptimization(ModelInterface):
 
         f.count = 0
         f.X = []
+        f.Y = []
         f.Y_best = []
         if verbose:
             if progress_bar is not None:
                 f.progress_bar = progress_bar
             else:
-                f.progress_bar = tqdm(total=total, desc='BayesianOptimization')
+                if notebook:
+                    f.progress_bar = tqdm.notebook.tqdm(total=total, desc='BayesianOptimization')
+                else:
+                    f.progress_bar = tqdm.tqdm(total=total, desc='BayesianOptimization')
+
         self.f = f
+        self.objective_name = objective_name
         self.model = GPyOpt.methods.BayesianOptimization(f=f,
                                                          domain=bounds,
                                                          model_type='GP',
@@ -52,4 +64,21 @@ class BayesianOptimization(ModelInterface):
 
     def fit(self) -> Tuple[int, list]:
         self.model.run_optimization(self.num_iter, eps=-1)
+        if self.log:
+            if self.log_file_name is not None:
+                self.write_log(self.log_file_name)
+            else:
+                self.write_log()
         return self.f.count, self.f.Y_best
+
+    def write_log(self, file_name='BayesianOptimization_log'):
+        file_name += f'_{self.objective_name}'
+        path_to_file = f'compare/data/log/{file_name}.txt'
+        if not os.path.exists(f'compare/data/log'):
+            os.mkdir(f'compare/data/log')
+        if not (os.path.exists(path_to_file) and os.path.isfile(path_to_file)):
+            open(path_to_file, 'w').close()
+
+        with open(path_to_file, 'w') as file:
+            for x, y, y_best in zip(self.f.X, self.f.Y, self.f.Y_best):
+                file.write("x: " + str(x) + " y: " + str(y) + " y_best: " + str(y_best) + '\n')
