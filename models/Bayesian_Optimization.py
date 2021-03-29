@@ -3,18 +3,20 @@ import GPyOpt
 from typing import Tuple
 import deminf_data
 import tqdm
+import tqdm.notebook
 import os
+import pickle
 
 
 class BayesianOptimization(ModelInterface):
 
-    def __init__(self, total, objective_name, progress_bar=None, verbose=True, notebook=True, log=False, log_file_name=None):
+    def __init__(self, total, objective_name, progress_bar=None, verbose=True, notebook=True, log=True, run=None):
         self.num_iter = total
-        self.log_file_name = log_file_name
-        if log_file_name is None:
-            self.log = log
+        self.log = log
+        if run is not None:
+            self.run = run
         else:
-            self.log = True
+            self.run = 'test_run'
         objective = deminf_data.Objective.from_name(objective_name, negate=True, type_of_transform='logarithm')
         bounds = []
         for i, (l, r) in enumerate(zip(objective.lower_bound, objective.upper_bound), start=1):
@@ -65,20 +67,19 @@ class BayesianOptimization(ModelInterface):
     def fit(self) -> Tuple[int, list]:
         self.model.run_optimization(self.num_iter, eps=-1)
         if self.log:
-            if self.log_file_name is not None:
-                self.write_log(self.log_file_name)
-            else:
-                self.write_log()
+            self.write_log()
         return self.f.count, self.f.Y_best
 
-    def write_log(self, file_name='BayesianOptimization_log'):
-        file_name += f'_{self.objective_name}'
-        path_to_file = f'compare/data/log/{file_name}.txt'
-        if not os.path.exists(f'compare/data/log'):
-            os.mkdir(f'compare/data/log')
-        if not (os.path.exists(path_to_file) and os.path.isfile(path_to_file)):
-            open(path_to_file, 'w').close()
-
-        with open(path_to_file, 'w') as file:
-            for x, y, y_best in zip(self.f.X, self.f.Y, self.f.Y_best):
-                file.write("x: " + str(x) + " y: " + str(y) + " y_best: " + str(y_best) + '\n')
+    def write_log(self):
+        path_to_file = f'compare/data/BayesianOptimization_log/{self.objective_name}/log_{self.run}.pickle'
+        path_to_dir = 'compare/data/BayesianOptimization_log'
+        if not os.path.exists(path_to_dir):
+            os.mkdir(path_to_dir)
+        path_to_dir = f'compare/data/BayesianOptimization_log/{self.objective_name}'
+        if not os.path.exists(path_to_dir):
+            os.mkdir(path_to_dir)
+        open(path_to_file, 'w')
+        with open(path_to_file, 'wb') as fp:
+            pickle.dump(self.f.X, fp)
+            pickle.dump(self.f.Y, fp)
+            pickle.dump(self.f.Y_best, fp)

@@ -27,7 +27,8 @@ def run_model(num, objective_name, tqdm_func, global_tqdm):
     seed = random.randrange(10000000)
     np.random.seed(seed)
     global num_evaluation
-    model = BayesianOptimization(total=num_evaluation, objective_name=objective_name, progress_bar=global_tqdm)
+    model = BayesianOptimization(total=num_evaluation, objective_name=objective_name, progress_bar=global_tqdm,
+                                 run=num + 1)
     _, Y_best = model.fit()
     return Y_best[:num_evaluation]
 
