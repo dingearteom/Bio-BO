@@ -15,7 +15,7 @@ Gadma_Y_best = []
 start_time = datetime.now()
 
 for i in range(num_run):
-    model = Gadma(total=num_evaluation, objective_name=objective_name, progress_bar=progress_bar_Gadma)
+    model = Gadma(total=num_evaluation, objective_name=objective_name, progress_bar=progress_bar_Gadma, run=i+1)
     Y_best = model.fit()
     Gadma_Y_best.append(Y_best)
 
