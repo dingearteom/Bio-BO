@@ -2,13 +2,11 @@ import tqdm
 from models.Bayesian_Optimization import BayesianOptimization
 import pickle
 from tqdm_multiprocess import TqdmMultiProcessPool
-from multiprocessing import Pool
 import random
 import numpy as np
 import sys
 import os
 from datetime import datetime
-import time
 
 objective_name = str(sys.argv[-3])
 num_run = int(sys.argv[-2])
