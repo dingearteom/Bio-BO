@@ -92,7 +92,7 @@ class DrawComparison:
                 Y_best = pickle.load(fp)
                 Y_best = Y_best[:self.num_evaluation]
                 color = ('blue' if model == 'Gadma' else 'orange')
-                ax.plot(range(1, self.num_evaluation + 1), Y_best, color=color, alpha=0.1)
+                ax.plot(range(1, self.num_evaluation + 1), Y_best, color=color, alpha=0.2)
         ax.legend()
 
 

@@ -1,78 +1,58 @@
-import deminf_data
+from functools import update_wrapper
+from models.utils import log, StopModel
+from typing import Optional
+from models.model_interface import ModelInterface
 from gadma import *
+import deminf_data
 import tqdm
-from models.error import StopModel
-import pickle
-import os
+import tqdm.notebook
 
 
-class Gadma:
-    def __init__(self, total, objective_name, progress_bar=None, verbose=True, log=True, run=None):
-        if run is not None:
-            self.run = run
-        else:
-            self.run = 'test_run'
-        objective = deminf_data.Objective.from_name(objective_name, negate=True, type_of_transform='logarithm')
+class Gadma(ModelInterface):
+    def __init__(self, num_evaluations: int, objective_name: str, notebook: bool = True,
+                 verbose: bool = False, progress_bar=None, model_kwargs: Optional[dict] = None):
+        self.num_evaluations = num_evaluations
+        self.f = deminf_data.Objective.from_name(objective_name, negate=True, type_of_transform='logarithm')
         variables = []
 
-        for i, (l, r) in enumerate(zip(objective.lower_bound, objective.upper_bound)):
+        for i, (l, r) in enumerate(zip(self.f.lower_bound, self.f.upper_bound)):
             variables.append(ContinuousVariable(f'var{i + 1}', [l, r]))
 
-        def f(x):
-            f.count += 1
-            f.X.append(x)
-            y = objective(x)
-            f.Y.append(y)
-            if len(f.Y_best) == 0 or f.Y_best[-1] > y:
-                f.Y_best.append(y)
+        self.progress_bar = progress_bar
+
+        if verbose:
+            if progress_bar is not None:
+                self.progress_bar = progress_bar
+            elif notebook:
+                self.progress_bar = tqdm.notebook.tqdm(total=num_evaluations, desc='Gadma')
             else:
-                f.Y_best.append(f.Y_best[-1])
-            if verbose:
-                f.progress_bar.update(1)
-            if f.count == total:
-                raise StopModel('nothing series, just stop of the model')
-            return y
+                self.progress_bar = tqdm.tqdm(total=num_evaluations, desc='Gadma')
 
-        f.count = 0
-        f.Y = []
-        f.X = []
-        f.Y_best = []
-        if progress_bar is not None:
-            f.progress_bar = progress_bar
-        elif verbose:
-            f.progress_bar = tqdm.tqdm(total=total, desc='Gadma')
-
-        self.f = f
-        self.opt1 = get_global_optimizer("Genetic_algorithm")
-        self.opt1.maximize = False
+        log_kwargs = {'batch': False, 'max_num_queries': num_evaluations}
+        if self.progress_bar is not None:
+            log_kwargs['progress_bar'] = self.progress_bar
+        update_wrapper(log(**log_kwargs), self.f)
+        self.opt = get_global_optimizer("Genetic_algorithm")
+        self.opt.maximize = False
         self.variables = variables
-        self.total = total
-        self.objective_name = objective_name
-        self.log = log
 
-    def fit(self):
+    def run(self):
         try:
-            self.opt1.optimize(self.f, self.variables, verbose=False, maxiter=self.total)
+            self.opt.optimize(self.f, self.variables, verbose=False, maxiter=self.num_evaluations)
         except Exception as exc:
             if not isinstance(exc, StopModel):
                 raise exc
-        if self.log:
-            self.write_log()
-        return self.f.Y_best
+        return self.f.X, self.f.Y
 
-    def write_log(self):
-        path_to_file = f'compare/data/Gadma_log/{self.objective_name}/log_{self.run}.pickle'
-        path_to_dir = 'compare/data/Gadma_log'
-        if not os.path.exists(path_to_dir):
-            os.mkdir(path_to_dir)
-        path_to_dir = f'compare/data/Gadma_log/{self.objective_name}'
-        if not os.path.exists(path_to_dir):
-            os.mkdir(path_to_dir)
-        open(path_to_file, 'w')
-        with open(path_to_file, 'wb') as fp:
-            pickle.dump(self.f.X, fp)
-            pickle.dump(self.f.Y, fp)
-            pickle.dump(self.f.Y_best, fp)
+    def get_model_kwargs(self) -> dict:
+        return dict()
+
+    def get_num_evaluations(self) -> int:
+        return self.num_evaluations
+
+    @staticmethod
+    def get_model_name():
+        return "Gadma"
 
 
 

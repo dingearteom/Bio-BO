@@ -58,7 +58,7 @@ if not os.path.exists(path_dir):
 with open(f"compare/data/Y_best/Y_best_BayesianOptimization_{objective_name}_saved.pickle", 'wb') as fp:
     pickle.dump(BayesianOptimization_Y_best, fp)
 
-path_to_file = 'compare/data/log_Y_best.txt'
+path_to_file = 'compare/data/log_runs.txt'
 if not os.path.exists(path_to_file):
     open(path_to_file, 'w').close()
 with open(path_to_file, 'a') as fp:

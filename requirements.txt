@@ -1,7 +1,9 @@
-GPyOpt
+GPyOpt~=1.2.6
 pygad
-numpy
-tqdm
-matplotlib
+numpy~=1.18.5
+tqdm~=4.47.0
+matplotlib~=3.2.2
 
 # deminf data
+
+gadma~=2.0.0rc11.dev18
