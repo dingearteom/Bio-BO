@@ -11,18 +11,27 @@ def log(**kwargs):
 
 
 class Log:
-    def __init__(self, f, batch: bool, progress_bar: Optional[Any] = None, max_num_queries: Optional[int] = None):
+    def __init__(self, f, batch: bool, progress_bar: Optional[Any] = None, max_num_queries: Optional[int] = None,
+                 args_to_dict: bool = False):
         self.f = f
         self.batch = batch
         self.progress_bar = progress_bar
         self.max_num_queries = max_num_queries
+        self.args_to_dict = args_to_dict
         self.count = 0
         self.X = []
         self.Y = []
         functools.update_wrapper(self, f)
 
-    def __call__(self, x: Union[float, Iterable]):
+    def __call__(self, x: Union[float, Iterable, dict]):
         x = copy(x)
+        if self.args_to_dict:
+            assert isinstance(x, dict)
+            _x = []
+            for i in range(1, len(x) + 1):
+                _x.append(x[f'x{i}'])
+            x = _x
+
         if isinstance(x, np.ndarray):
             x = x.tolist()
 

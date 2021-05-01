@@ -1,6 +1,8 @@
 from abc import abstractmethod
 import abc
 from typing import Tuple, Optional
+import tqdm
+import tqdm.notebook
 
 
 class ModelInterface(metaclass=abc.ABCMeta):
@@ -25,3 +27,14 @@ class ModelInterface(metaclass=abc.ABCMeta):
     @abstractmethod
     def get_num_evaluations(self) -> int:
         pass
+
+    def set_progress_bar(self, num_evaluations, notebook, verbose, progress_bar):
+        self.progress_bar = progress_bar
+
+        if verbose:
+            if progress_bar is not None:
+                self.progress_bar = progress_bar
+            elif notebook:
+                self.progress_bar = tqdm.notebook.tqdm(total=num_evaluations, desc=self.get_model_name())
+            else:
+                self.progress_bar = tqdm.tqdm(total=num_evaluations, desc=self.get_model_name())

@@ -18,15 +18,7 @@ class Gadma(ModelInterface):
         for i, (l, r) in enumerate(zip(self.f.lower_bound, self.f.upper_bound)):
             variables.append(ContinuousVariable(f'var{i + 1}', [l, r]))
 
-        self.progress_bar = progress_bar
-
-        if verbose:
-            if progress_bar is not None:
-                self.progress_bar = progress_bar
-            elif notebook:
-                self.progress_bar = tqdm.notebook.tqdm(total=num_evaluations, desc='Gadma')
-            else:
-                self.progress_bar = tqdm.tqdm(total=num_evaluations, desc='Gadma')
+        self.set_progress_bar(num_evaluations, notebook, verbose, progress_bar)
 
         log_kwargs = {'batch': False, 'max_num_queries': num_evaluations}
         if self.progress_bar is not None:

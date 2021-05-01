@@ -15,8 +15,9 @@ from datetime import datetime
 from compare.scripts.write_log import write_log
 from models.Bayesian_Optimization import BayesianOptimization
 from models.Gadma import Gadma
+from models.bo_torch import BoTorch
 
-model_name_to_class = {'GPyOpt': BayesianOptimization, 'Gadma': Gadma}
+model_name_to_class = {'GPyOpt': BayesianOptimization, 'Gadma': Gadma, 'BoTorch': BoTorch}
 
 
 def error_callback(result):
