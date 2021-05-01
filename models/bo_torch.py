@@ -1,8 +1,8 @@
-from model_interface import ModelInterface
+from models.model_interface import ModelInterface
 from typing import Optional, Tuple, List
 from ax import optimize
 import deminf_data
-from utils import log
+from models.utils import log
 
 
 class BoTorch(ModelInterface):
