@@ -23,7 +23,7 @@ class Gadma(ModelInterface):
         log_kwargs = {'batch': False, 'max_num_queries': num_evaluations}
         if self.progress_bar is not None:
             log_kwargs['progress_bar'] = self.progress_bar
-        update_wrapper(log(**log_kwargs), self.f)
+        self.f = log(**log_kwargs)(self.f)
         self.opt = get_global_optimizer("Genetic_algorithm")
         self.opt.maximize = False
         self.variables = variables
@@ -45,6 +45,7 @@ class Gadma(ModelInterface):
     @staticmethod
     def get_model_name():
         return "Gadma"
+
 
 
 
