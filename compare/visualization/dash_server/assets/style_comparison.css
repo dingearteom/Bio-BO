@@ -1,0 +1,52 @@
+.graph-title{
+    color: green;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.menu-header-comparison{
+    display: flex;
+    justify-content: space-evenly;
+    width: 500px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.menu-title{
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #079A82;
+}
+
+#comparison-graph{
+    margin-right: 10px;
+}
+
+#comparison-table{
+    margin: 0 10px;
+    width:500px;
+}
+
+
+
+#button-clear-comparison{
+    color:red;
+}
+
+#button-add-comparison{
+    margin:10px;
+}
+
+#comparison-add-model-dropdowns{
+    display: flex;
+}
+
+#comparison-content{
+    display:flex;
+}
+
+.comparison-add-model-dropdown{
+    margin: 0 10px;
+}

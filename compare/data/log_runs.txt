@@ -11,4 +11,8 @@ Gadma 2_DivMig_5_Sim 50x300 31/03/2021 00:56:36 execution_time:00:10:12
 #####
 GPyOpt 1 1_Bot_4_Sim 5x60 25/04/2021 11:37:35 execution_time:00:02:21 
 GPyOpt 1 1_Bot_4_Sim 5x30 25/04/2021 11:41:47 execution_time:00:01:03 
-GPyOpt 2 1_Bot_4_Sim 5x30 25/04/2021 11:42:33 execution_time:00:00:46 
+GPyOpt 2 1_Bot_4_Sim 5x30 25/04/2021 11:42:33 execution_time:00:00:46
+#iris
+Gadma 1 1_Bot_4_Sim 50x50 01/05/2021 13:13:53 execution_time:00:00:06
+GPyOpt 1 1_Bot_4_Sim 50x50 01/05/2021 13:26:21 execution_time:00:12:27
+
