@@ -1,11 +1,13 @@
 from models.model_interface import ModelInterface
 import GPyOpt
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 import deminf_data
 import functools
 import tqdm
 import tqdm.notebook
+import numpy as np
 from models.utils import log
+from models.draw_interface import DrawModelInterface
 
 
 class BayesianOptimization(ModelInterface):
@@ -26,7 +28,8 @@ class BayesianOptimization(ModelInterface):
         self.f = log(**log_kwargs)(self.f)
 
         self.model_default_kwargs = {'model_type': 'GP', 'acquisition_type': 'EI',
-                                     'normalize_Y': True, 'initial_design_numdata': 5}
+                                     'normalize_Y': True, 'initial_design_numdata': 5,
+                                     'exact_feval': True}
 
         if model_kwargs is not None:
             self.model_default_kwargs.update(model_kwargs)
@@ -46,3 +49,30 @@ class BayesianOptimization(ModelInterface):
     @staticmethod
     def get_model_name():
         return "GPyOpt"
+
+
+class BayesianOptimizationDraw(DrawModelInterface):
+    def __init__(self, objective_name: str, X: List[List], Y: List[List], model_kwargs: Optional[dict] = None):
+        self.f = deminf_data.Objective.from_name(objective_name, negate=True, type_of_transform='logarithm')
+
+        bounds = []
+        for i, (l, r) in enumerate(zip(self.f.lower_bound, self.f.upper_bound), start=1):
+            bounds.append({'name': f'var_{i}', 'type': 'continuous', 'domain': (l, r)})
+
+        log_kwargs = {'batch': True}
+        self.f = log(**log_kwargs)(self.f)
+
+        self.model_default_kwargs = {'model_type': 'GP', 'acquisition_type': 'EI',
+                                     'normalize_Y': True, 'initial_design_numdata': 5,
+                                     'exact_feval': True}
+
+        if model_kwargs is not None:
+            self.model_default_kwargs.update(model_kwargs)
+
+        self.model = GPyOpt.methods.BayesianOptimization(f=self.f, domain=bounds, X=X, Y=Y, **self.model_default_kwargs)
+
+    def acquisition(self, X: List[List]) -> List:
+        return self.model.acquisition(X)
+
+    def predict(self, X: List[List]) -> Tuple[List, List]:
+        return self.model.model.predict(X)

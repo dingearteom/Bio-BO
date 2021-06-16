@@ -15,4 +15,11 @@ GPyOpt 2 1_Bot_4_Sim 5x30 25/04/2021 11:42:33 execution_time:00:00:46
 #iris
 Gadma 1 1_Bot_4_Sim 50x50 01/05/2021 13:13:53 execution_time:00:00:06
 GPyOpt 1 1_Bot_4_Sim 50x50 01/05/2021 13:26:21 execution_time:00:12:27
-
+#iris
+Gadma 1 1_Bot_4_Sim 50x300 02/05/2021 12:49:58 execution_time:00:00:29
+Gadma 1 2_ExpDivNoMig_5_Sim 50x300 02/05/2021 12:54:45 execution_time:00:02:31
+Gadma 1 2_DivMig_5_Sim 50x300 02/05/2021 12:57:00 execution_time:00:02:14
+#hulk
+GPyOpt 1 1_Bot_4_Sim 50x300 02/05/2021 18:44:05 execution_time:05:17:24
+#iris
+BoTorch 1 1_Bot_4_Sim 10x300 02/05/2021 23:03:08 execution_time:07:20:47

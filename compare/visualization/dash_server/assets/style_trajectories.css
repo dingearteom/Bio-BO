@@ -1,0 +1,15 @@
+#trajectories-menu{
+    display:flex;
+}
+
+#trajectories-graph-plus-menu{
+    display: flex;
+}
+
+.trajectories-dropdown{
+    margin:10px;
+}
+
+#button-draw-trajectories{
+    margin:10px
+}

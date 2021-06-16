@@ -1,0 +1,15 @@
+#contour-plots{
+    display: flex;
+}
+
+#contour-menu{
+    display: flex;
+}
+
+.contour-dropdown{
+    margin: 10px;
+}
+
+#button-draw-contour{
+    margin: 10px;
+}

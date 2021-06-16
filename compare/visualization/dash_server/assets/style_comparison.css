@@ -1,23 +1,9 @@
-.graph-title{
-    color: green;
-    font-size: 48px;
-    font-weight: bold;
-    text-align: center;
-    margin: 0 auto;
-}
-
-.menu-header-comparison{
+#menu-header-comparison{
     display: flex;
     justify-content: space-evenly;
     width: 500px;
     padding-top: 10px;
     padding-bottom: 10px;
-}
-
-.menu-title{
-    margin-bottom: 6px;
-    font-weight: bold;
-    color: #079A82;
 }
 
 #comparison-graph{
@@ -28,8 +14,6 @@
     margin: 0 10px;
     width:500px;
 }
-
-
 
 #button-clear-comparison{
     color:red;
@@ -47,6 +31,6 @@
     display:flex;
 }
 
-.comparison-add-model-dropdown{
+.comparison-dropdown{
     margin: 0 10px;
 }
